@@ -1,6 +1,6 @@
 # UDP_socket_multicast
 
- This code is to use the multicast Python programs to send a small file to a selected few hosts.
+ This project is to use the multicast Python programs to send a small file to a selected few hosts.
  For these two programs to work properly, i.e., to send and receive a file, these two programs must 
  adhere to a protocol. The programs at present implements the following simple protocol:
 
