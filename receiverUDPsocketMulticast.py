@@ -1,6 +1,3 @@
-#put print(...) to check that part of code,
-#if it print out,it's good. if didn't print out,that part of code has problem.
-#run receiver before sender.
 
 import sys
 import socket
@@ -12,24 +9,21 @@ def help_and_exit(prog):
     print('Usage: ' + prog + ' from_nic_by_host_ip mcast_group_ip mcast_port')
     sys.exit(1)
 
-#There are 2 arguments here, when you use it, you need put 2 arguments too!
-#write means to write content of the file.
-#write a file=open a file with the filename, as f,f.write(buf)
 def write_file(filename, buf):
     with open(filename, 'wb') as f:
         f.write(buf)
 
 def mc_recv_file(fromnicip, mcgrpip, mcport):
 
-    # 1. Creates a UDP socket
+    #  Creates a UDP socket
     receiver = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM, \
             proto=socket.IPPROTO_UDP, fileno=None)
 
-    # 2. Defines a multicast end point
+    #  Defines a multicast end point
     bindaddr = (mcgrpip, mcport)
     receiver.bind (bindaddr)
 
-    # 3. Joins the socket to the intended multicast group. 
+    #  Joins the socket to the intended multicast group. 
     if fromnicip == '0.0.0.0':
         mreq = struct.pack("=4sl", socket.inet_aton(mcgrpip), socket.INADDR_ANY)
     else:
@@ -38,19 +32,19 @@ def mc_recv_file(fromnicip, mcgrpip, mcport):
     receiver.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
     # receiver regards the datagram received first time as filename.
-    # 4. Receive the filename
+    # Receive the filename
     buf,senderaddr = receiver.recvfrom(1024)
     filename=buf.decode()
 
     # receiver regards the datagram received second time as file content.
-    # 5. Receive file content of the file and write it to file
+    # Receive file content of the file and write it to file
     buf,senderaddr = receiver.recvfrom(1024)
     data = buf
     print ("got it",data)
 #There are 2 arguments for write_file here, cannot only have 1 argument.
     write_file (filename,data)
 
-    # 6. Release resources
+    # Release resources
     receiver.close()
     print('Completed')
 
