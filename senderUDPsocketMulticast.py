@@ -10,7 +10,7 @@ def help_and_exit(prog):
     sys.exit(1)
 
 
-#read means to read content of the file.
+#read the file.
 def read_file(filename):
     buf = None
     with open(filename, 'rb') as f:
@@ -18,17 +18,17 @@ def read_file(filename):
     return buf
 
 def mc_send_file(hostip, mcgrpip, mcport, filename):
-    # 1. creates a UDP socket
+    # creates a UDP socket
     sender = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM, \
             proto=socket.IPPROTO_UDP, fileno=None)
 
-    # 2. Defines a multicast end point
+    # Defines a multicast end point
     mcgrp = (mcgrpip, mcport)
 
-    # 3. Set up IP_MULTICAST_TTL
+    # Set up IP_MULTICAST_TTL
     sender.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 1)
 
-    # 4. Set up transmitting NIC for multicast datagrams
+    # Set up transmitting NIC for multicast datagrams
     sender.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_IF, \
             socket.inet_aton(hostip))
     bindaddr=(mcgrpip,mcport)
@@ -37,21 +37,19 @@ def mc_send_file(hostip, mcgrpip, mcport, filename):
 #There are 2 arguments for sender.sendto,
 #first one is the things you need to send out,
 #second one is the destination of the things.
-   # 5. Transmit the filename in a datagram
+   # Transmit the filename in a datagram
     sender.sendto(filename.encode(),mcgrp)
     #sender.send(f"{filename}{file.size}".encode())
     
-    # 6. Read the file and transmit the file content in a datagram
+    # Read the file and transmit the file content in a datagram
     data=read_file (filename)
     sender.sendto (data,mcgrp)
 
-    # "T" in "true" must be capital!You need "break" to close the loop.
     while True:
         if (sender.sendto(data,mcgrp)):
             print('sending')
         break
 
-    # 7. release the socket resources
     sender.close()
     
     print('Completed')
